@@ -1,9 +1,9 @@
 FLOW
 
-RFID Tag Scanned on RFID reader
-Data displayed on Blynk app
-Data saved on Blynk database
-Back to start again
+RFID Tag Scanned on RFID reader,
+Data displayed on Blynk app,
+Data saved on Blynk database,
+Back to start again,
 
 
 At Blyk app
