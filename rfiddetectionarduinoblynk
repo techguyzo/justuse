@@ -1,0 +1,191 @@
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include <SPI.h>
+#include <MFRC522.h>
+#define SS_PIN 2
+#define RST_PIN 0
+MFRC522 mfrc522(SS_PIN, RST_PIN);                      // Create MFRC522 instance.
+char auth[] = "blynk token please change";             //Token
+char ssid[] = "wifi name please change";               //WIFI ID
+char pass[] = "wifi password";                         //WIFI PASSWORD
+
+
+//Device    <<>>    NodeMCU
+//SDA       <<>>    D4
+//RST       <<>>    D2
+//SCK       <<>>    D5
+//MOSI      <<>>    D7
+//MISO      <<>>    D6
+//GND       <<>>    GND
+//3V3       <<>>    3V3
+//Red Led   <<>>    D0
+//Green Led <<>>    D1
+
+
+WidgetTerminal terminal(V4);
+BlynkTimer timer;
+
+int id;             //1XXX
+int gender;         //0(female) or 1(male)
+int infection;        //2XXX          2001,2002,2003
+long DoQ;             //2009 etc year
+int HQR;
+
+void sendValue()
+{
+
+
+}
+void setup()
+{
+  Serial.begin(9600);   // Initiate a serial communication
+  SPI.begin();      // Initiate  SPI bus
+  mfrc522.PCD_Init();   // Initiate MFRC522
+  Serial.println("Put RFID Card to Scan...");
+  Serial.println();
+  Blynk.begin(auth, ssid, pass);
+  timer.setInterval(500L, sendValue);
+
+}
+void loop()
+{
+  Blynk.run();
+  // Look for new cards
+  if ( ! mfrc522.PICC_IsNewCardPresent())
+  {
+    return;
+  }
+  // Select one of the cards
+  if ( ! mfrc522.PICC_ReadCardSerial())
+  {
+    return;
+  }
+  //Show UID on serial monitor///////////////////////////////////////////////////////////////////////
+
+  String content = "";
+  byte letter;
+  for (byte i = 0; i < mfrc522.uid.size; i++)
+  {
+
+    content.concat(String(mfrc522.uid.uidByte[i] < 0x10 ? " 0" : " "));
+    content.concat(String(mfrc522.uid.uidByte[i], HEX));
+  }
+  Serial.println();
+  Serial.print("User No./Name:    ");
+  content.toUpperCase();
+  if (content.substring(1) == "57 D5 D3 26" )
+  {
+    Serial.println("1-Quarintine P1");
+    id = 1001;
+    gender = 1000;
+    infection = 000;
+    DoQ = 15042020;
+    Serial.println(id);
+    Serial.println(gender);
+    Serial.println(infection);
+    Serial.println(DoQ);
+    terminal.print("ID: ");
+    terminal.println(id); // Print values, like Serial.println()
+    terminal.print("Gender: ");
+    terminal.println("Male"); // Print values, like Serial.println()
+    terminal.print("Infection: ");
+    terminal.println("Negative"); // Print values, like Serial.println()
+    terminal.print("Date of Quarintine: ");
+    terminal.println(HQR); // Print values, like Serial.println()
+    terminal.println("----");
+
+    
+    Serial.println();
+    Blynk.virtualWrite(V0, (id));
+    Blynk.virtualWrite(V1, (gender));
+    Blynk.virtualWrite(V2, (infection));
+    Blynk.virtualWrite(V3, (DoQ));
+
+    delay(3000);
+  }
+  if (content.substring(1) ==  "CA DE 92 25" )
+  {
+    Serial.println("2-Quarintine P2");
+
+    id = 1004;
+    gender = 1000;
+    infection = 100;
+    DoQ = 23042020;
+    Serial.println(id);
+    Serial.println(gender);
+    Serial.println(infection);
+    Serial.println(DoQ);
+    Serial.println();
+    terminal.print("ID: ");
+    terminal.println(id); // Print values, like Serial.println()
+    terminal.print("Gender: ");
+    terminal.println("Male"); // Print values, like Serial.println()
+    terminal.print("Infection: ");
+    terminal.println("Positive"); // Print values, like Serial.println()
+    terminal.print("Date of quarintine: ");
+    terminal.println(HQR); // Print values, like Serial.println()
+    terminal.println("----");
+
+    Blynk.virtualWrite(V0, (id));
+    Blynk.virtualWrite(V1, (gender));
+    Blynk.virtualWrite(V2, (infection));
+    Blynk.virtualWrite(V3, (DoQ));
+    delay(3000);
+  }
+  if (content.substring(1) == "D2 5E 38 31" )
+  {
+    Serial.println("3-Vehicle 1");
+
+    id = 2011;
+    gender = 2000;
+    infection = 000;
+    HQR = 0;
+    Serial.println(id);
+    Serial.println(gender);
+    Serial.println(infection);
+    Serial.println(HQR);
+    Serial.println();
+    terminal.print("ID: ");
+    terminal.println(id); // Print values, like Serial.println()
+    terminal.print("Gender: ");
+    terminal.println("Female"); // Print values, like Serial.println()
+    terminal.print("Infection: ");
+    terminal.println("Negative"); // Print values, like Serial.println()
+    terminal.print("Household quarantine record: ");
+    terminal.println("Negative");
+    terminal.println(HQR); // Print values, like Serial.println()
+
+    Blynk.virtualWrite(V0, (id));
+    Blynk.virtualWrite(V1, (gender));
+    Blynk.virtualWrite(V2, (infection));
+    Blynk.virtualWrite(V4, (HQR));
+    delay(3000);
+  }
+  if (content.substring(1) == "B1 DA 10 19" )
+  {
+    Serial.println("4-Vehicle 2");
+    id = 2117;
+    gender = 2000;
+    infection = 000;
+    HQR = 1;
+    Serial.println(id);
+    Serial.println(gender);
+    Serial.println(infection);
+    Serial.println(HQR);
+    Serial.println();
+    terminal.print("ID: ");
+    terminal.println(id); // Print values, like Serial.println()
+    terminal.print("Gender: ");
+    terminal.println("Female"); // Print values, like Serial.println()
+    terminal.print("Infection: ");
+    terminal.println("Negative"); // Print values, like Serial.println()
+    terminal.print("Household quarantine record: ");
+    terminal.println(HQR); // Print values, like Serial.println()
+
+    Blynk.virtualWrite(V0, (id));
+    Blynk.virtualWrite(V1, (gender));
+    Blynk.virtualWrite(V2, (infection));
+    Blynk.virtualWrite(V4, (HQR));
+    delay(3000);
+  }
+}
