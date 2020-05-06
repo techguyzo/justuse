@@ -27,9 +27,9 @@ BlynkTimer timer;
 
 int id;             //1XXX
 int gender;         //0(female) or 1(male)
-int infection;        //2XXX          2001,2002,2003
-long DoQ;             //2009 etc year
-int HQR;
+int infection;      //1000
+long DoQ;           //Date of Quarantine
+int HQR;            //Household quarantine record
 
 void sendValue()
 {
